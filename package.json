@@ -1,0 +1,9 @@
+{
+  "name": "blockchain",
+  "version": "0.0.1",
+  "description": "Blockchain JS",
+  "main": "index.js",
+  "repository": "github.com/alissonfpmorais/blockchain-js",
+  "author": "Alisson Morais (alissonfpmorais@gmail.com)",
+  "license": "MIT"
+}

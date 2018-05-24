@@ -5,5 +5,8 @@
   "main": "index.js",
   "repository": "github.com/alissonfpmorais/blockchain-js",
   "author": "Alisson Morais (alissonfpmorais@gmail.com)",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "sha256": "^0.2.0"
+  }
 }

@@ -1,12 +1,14 @@
 {
   "name": "blockchain",
-  "version": "0.0.1",
-  "description": "Blockchain JS",
-  "main": "index.js",
-  "repository": "github.com/alissonfpmorais/blockchain-js",
-  "author": "Alisson Morais (alissonfpmorais@gmail.com)",
-  "license": "MIT",
+  "version": "1.0.0",
+  "scripts": {
+    "start": "nodemon --watch dev -e js dev/api.js"
+  },
   "dependencies": {
-    "sha256": "^0.2.0"
+    "body-parser": "^1.18.3",
+    "express": "^4.16.3",
+    "nodemon": "^1.18.2",
+    "sha256": "^0.2.0",
+    "uuid": "^3.3.2"
   }
 }

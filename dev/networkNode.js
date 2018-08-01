@@ -13,18 +13,17 @@ const bitcoin = new Blockchain();
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false}))
 
-app.get('/blockchain', function (req, res) {
+app.get('/blockchain', (req, res) => {
 	res.send(bitcoin);
 });
 
-
-app.post('/transaction', function(req,res) {
+app.post('/transaction', (req,res) => {
 	const newTransaction = req.body.newTransaction;
 	const blockIndex = bitcoin.addTransactionToPendingTransactions	(newTransaction);
 	res.json({ note: `Transaction will be added in block ${blockIndex}.`});
 });
 
-app.post('/transaction/broadcast', function(req, res) {
+app.post('/transaction/broadcast', (req, res) => {
 	const newTransaction = bitcoin.createNewTransaction(req.body.amount, req.body.sender, req.body.recipient);
 	bitcoin.addTransactionToPendingTransactions(newTransaction);
 
@@ -46,7 +45,7 @@ app.post('/transaction/broadcast', function(req, res) {
 	});
 });
 
-app.get('/mine', function(req,res) {
+app.get('/mine', (req,res) => {
 	const lastBlock = bitcoin.getLastBlock();
 	const previousBlockHash = lastBlock['hash'];
 	const currentBlockData = {
@@ -90,7 +89,7 @@ app.get('/mine', function(req,res) {
 	});
 });
 
-app.post("/receive-new-block", function(req, res) {
+app.post("/receive-new-block", (req, res)  => {
 	const newBlock = req.body.newBlock;
 	const lastBlock = bitcoin.getLastBlock();
 	const correctHash = lastBlock.hash === newBlock.previousBlockHash;
@@ -109,12 +108,11 @@ app.post("/receive-new-block", function(req, res) {
 			newBlock: newBlock
 		});
 	}
-
 });
 
 // register a node and broadcast it the network, adiciona o nó e chama register node para todos os nós da rede,
 // fazendo com que todos os nós adicionem o novo nó. Depois disso, adiciona todos os nós para o novo nó inserido, através do register-nodes-bulk 
-app.post('/register-and-broadcast-node', function(req ,res) {
+app.post('/register-and-broadcast-node', (req ,res)  => {
 	const newNodeUrl = req.body.newNodeUrl;
 	if(bitcoin.networkNodes.indexOf(newNodeUrl) == -1)
 		bitcoin.networkNodes.push(newNodeUrl);
@@ -143,13 +141,21 @@ app.post('/register-and-broadcast-node', function(req ,res) {
 		return rp(bulkRegisterOptions);
 	})
 	.then(data => {
+		const consensusOptions = {
+			uri: newNodeUrl + "/consensus",
+			method: 'GET',
+			json: true
+		};
+		return rp(consensusOptions);
+	})
+	.then(data => {
 		res.json({ node: 'New node registred with network successfully.'});
 	})
 
 });
 
 // register a node with the network 
-app.post('/register-node', function(req, res) {
+app.post('/register-node', (req, res) => {
 	const newNodeUrl = req.body.newNodeUrl;
 	const nodeNotAlreadyPresent = bitcoin.networkNodes.indexOf(newNodeUrl) == -1;
 	const notCurrentNode = bitcoin.currentNodeUrl != newNodeUrl;
@@ -160,7 +166,7 @@ app.post('/register-node', function(req, res) {
 });
 
 //chamado após o nó ser inserido na rede, para que o novo no tenha todos os nós da rede
-app.post('/register-nodes-bulk', function(req, res) {
+app.post('/register-nodes-bulk', (req, res) => {
 	const allNetworkNodes = req.body.allNetworkNodes;
 	allNetworkNodes.forEach(networkNodeUrl => {
 		const nodeNotAlreadyPresent = bitcoin.networkNodes.indexOf(networkNodeUrl) == -1;
@@ -172,7 +178,7 @@ app.post('/register-nodes-bulk', function(req, res) {
 	res.json({ note: 'Bulk registration successfully.'});
 });
  
-app.get('/consensus', function(req, res) {
+app.get('/consensus', (req, res) => {
 	const requestPromises = [];
 	bitcoin.networkNodes.forEach(networkNodeUrl =>{
 		const requestOptions = {
@@ -212,6 +218,35 @@ app.get('/consensus', function(req, res) {
 			});
 		}
 	});
+});
+
+app.get('/block/:blockHash', (req, res) => { //localhost:3001/block/asdowidonaioda
+	const blockHash = req.params.blockHash;
+	const correctBlock = bitcoin.getBlock(blockHash);
+	res.json({
+		block: correctBlock
+	});
+});
+
+app.get('/transaction/:transactionId', (req, res) => {
+	const transactionId = req.params.transactionId;
+	const transactionData = bitcoin.getTransaction(transactionId);
+	res.json({
+		transaction: transactionData.transaction,
+		block: transactionData.block
+	});
+});
+
+app.get('/address/:address', (req, res) => {
+	const address = req.params.address;
+	const addressData = bitcoin.getAddressData(address);
+	res.json({
+		addressData: addressData
+	});
+});
+
+app.get('/block-explorer', (req, res) => {
+	res.sendFile('./block-explorer/index.html', {root: __dirname});
 });
 
 app.listen(port, function() {

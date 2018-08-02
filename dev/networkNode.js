@@ -91,7 +91,6 @@ app.get('/mine', function (req, res) {
         };
         requestPromises.push(rp(requestOptions));
     });
-
     Promise.all(requestPromises)
         .then(data => {
             const requestOptions = {
@@ -120,7 +119,7 @@ app.post("/receive-new-block", function (req, res) {
     const correctHash = lastBlock.hash === newBlock.previousBlockHash;
     const correctIndex = lastBlock['index'] + 1 === newBlock['index'];
 
-    if (correctIndex && correctIndex) {
+    if (correctIndex && correctHash) {
         bitcoin.chain.push(newBlock);
         bitcoin.pendingTransactions = [];
         res.json({

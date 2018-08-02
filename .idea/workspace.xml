@@ -2,7 +2,6 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="5d0dd209-dda8-41b0-9174-7f653735cdd9" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/dev/blockchain.js" beforeDir="false" afterPath="$PROJECT_DIR$/dev/blockchain.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/dev/networkNode.js" beforeDir="false" afterPath="$PROJECT_DIR$/dev/networkNode.js" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/.tmp/" />
@@ -34,12 +33,12 @@
       </usages-collector>
       <usages-collector id="statistics.file.extensions.edit">
         <counts>
-          <entry key="js" value="663" />
+          <entry key="js" value="1081" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
-          <entry key="JavaScript" value="663" />
+          <entry key="JavaScript" value="1081" />
         </counts>
       </usages-collector>
     </session>
@@ -58,17 +57,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/dev/networkNode.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="2480">
-              <caret line="265" column="15" selection-start-line="265" selection-start-column="10" selection-end-line="265" selection-end-column="15" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/testing/trytoCrash.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="323">
-              <caret line="28" column="6" lean-forward="true" selection-start-line="28" selection-start-column="6" selection-end-line="28" selection-end-column="6" />
+            <state relative-caret-position="168">
+              <caret line="14" lean-forward="true" selection-start-line="14" selection-end-line="14" />
             </state>
           </provider>
         </entry>
@@ -90,6 +80,7 @@
       <find>mine</find>
       <find>=&gt;</find>
       <find>chainIsValid</find>
+      <find>correctHash</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -99,8 +90,8 @@
     <option name="CHANGED_PATHS">
       <list>
         <option value="$PROJECT_DIR$/testing/trytoCrash.js" />
-        <option value="$PROJECT_DIR$/dev/networkNode.js" />
         <option value="$PROJECT_DIR$/dev/blockchain.js" />
+        <option value="$PROJECT_DIR$/dev/networkNode.js" />
       </list>
     </option>
   </component>
@@ -153,7 +144,7 @@
   </component>
   <component name="PropertiesComponent">
     <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../FileTest" />
   </component>
   <component name="RunDashboard">
     <option name="ruleStates">
@@ -195,12 +186,12 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1533125174231</updated>
-      <workItem from="1533125178469" duration="5883000" />
+      <workItem from="1533125178469" duration="8452000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="5883000" />
+    <option name="totallyTimeSpent" value="8452000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1382" height="744" extended-state="6" />
@@ -210,13 +201,13 @@
       <window_info id="npm" order="1" side_tool="true" />
       <window_info content_ui="combo" id="Project" order="2" weight="0.2473525" />
       <window_info id="Structure" order="3" side_tool="true" weight="0.25" />
-      <window_info anchor="bottom" id="Terminal" order="0" />
+      <window_info active="true" anchor="bottom" id="Terminal" order="0" visible="true" weight="0.004918033" />
       <window_info anchor="bottom" id="Event Log" order="1" side_tool="true" />
       <window_info anchor="bottom" id="Version Control" order="2" />
       <window_info anchor="bottom" id="Docker" order="3" show_stripe_button="false" />
       <window_info anchor="bottom" id="Message" order="4" />
       <window_info anchor="bottom" id="Find" order="5" />
-      <window_info active="true" anchor="bottom" id="Run" order="6" visible="true" weight="0.23278688" />
+      <window_info anchor="bottom" id="Run" order="6" weight="0.19508196" />
       <window_info anchor="bottom" id="Debug" order="7" weight="0.19180328" />
       <window_info anchor="bottom" id="Cvs" order="8" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="9" weight="0.4" />
@@ -271,8 +262,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/dev/networkNode.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2480">
-          <caret line="265" column="15" selection-start-line="265" selection-start-column="10" selection-end-line="265" selection-end-column="15" />
+        <state relative-caret-position="168">
+          <caret line="14" lean-forward="true" selection-start-line="14" selection-end-line="14" />
         </state>
       </provider>
     </entry>

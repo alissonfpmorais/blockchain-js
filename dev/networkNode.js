@@ -8,28 +8,28 @@ const rp = require('request-promise');
 
 const nodeAddress = uuid().split('-').join('');
 
-const bitcoin = new Blockchain();
+const carChain = new Blockchain();
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: false}))
 
 app.get('/blockchain', function (req, res) {
-    res.send(bitcoin);
+    res.send(carChain);
 });
 
 
 app.post('/transaction', function (req, res) {
     const newTransaction = req.body.newTransaction;
-    const blockIndex = bitcoin.addTransactionToPendingTransactions(newTransaction);
+    const blockIndex = carChain.addTransactionToPendingTransactions(newTransaction);
     res.json({note: `Transaction will be added in block ${blockIndex}.`});
 });
 
 app.post('/transactionMoney/broadcast', function (req, res) {
-    const newTransaction = bitcoin.createNewTransactionMoney(req.body.amount, req.body.sender, req.body.recipient);
-    bitcoin.addTransactionToPendingTransactions(newTransaction);
+    const newTransaction = carChain.createNewTransactionMoney(req.body.amount, req.body.sender, req.body.recipient);
+    carChain.addTransactionToPendingTransactions(newTransaction);
 
     const requestPromises = [];
-    bitcoin.networkNodes.forEach(networkNodeUrl => {
+    carChain.networkNodes.forEach(networkNodeUrl => {
         const requestOptions = {
             uri: networkNodeUrl + "/transaction",
             method: 'POST',
@@ -48,11 +48,11 @@ app.post('/transactionMoney/broadcast', function (req, res) {
 
 app.post('/transaction/broadcast', (req, res) => {
     //verificar senha e se ja existe o carro
-    const newTransaction = bitcoin.createNewTransaction(req.body.meter, req.body.carId);
-    bitcoin.addTransactionToPendingTransactions(newTransaction);
+    const newTransaction = carChain.createNewTransaction(req.body.meter, req.body.carId);
+    carChain.addTransactionToPendingTransactions(newTransaction);
 
     const requestPromises = [];
-    bitcoin.networkNodes.forEach(networkNodeUrl =>{
+    carChain.networkNodes.forEach(networkNodeUrl =>{
         const requestOptions = {
             uri: networkNodeUrl + "/transaction",
             method: 'POST',
@@ -70,65 +70,77 @@ app.post('/transaction/broadcast', (req, res) => {
 });
 
 app.get('/mine', function (req, res) {
-    console.log("there we are");
-    const lastBlock = bitcoin.getLastBlock();
+    console.log("mine chamado");
+    const lastBlock = carChain.getLastBlock();
     const previousBlockHash = lastBlock['hash'];
     const currentBlockData = {
-        transactions: bitcoin.pendingTransactions,
+        transactions: carChain.pendingTransactions,
         index: lastBlock['index'] + 1
-    }
-    const nonce = bitcoin.proofOfWork(previousBlockHash, currentBlockData);
-    const blockHash = bitcoin.hashBlock(previousBlockHash, currentBlockData, nonce);
-    const newBlock = bitcoin.createNewBlock(nonce, previousBlockHash, blockHash);
-
-    const requestPromises = [];
-    bitcoin.networkNodes.forEach(networkNodeUrl => {
+    };
+    const nonce = carChain.proofOfWork(previousBlockHash, currentBlockData);
+    if(nonce == -1) {
         const requestOptions = {
-            uri: networkNodeUrl + "/receive-new-block",
-            method: "POST",
-            body: {
-                newBlock: newBlock
-            },
+            uri: carChain.currentNodeUrl + '/consensus',
+            method: 'GET',
             json: true
-        };
-        requestPromises.push(rp(requestOptions));
-    });
-    Promise.all(requestPromises)
-        .then(data => {
+        }
+        console.log('Chamando consensus pq outro no mineirou primeiro');
+        rp(requestOptions);
+    }
+    else {
+        const blockHash = carChain.hashBlock(previousBlockHash, currentBlockData, nonce);
+        const newBlock = carChain.createNewBlock(nonce, previousBlockHash, blockHash);
+
+        const requestPromises = [];
+        carChain.networkNodes.forEach(networkNodeUrl => {
             const requestOptions = {
-                uri: bitcoin.currentNodeUrl + '/transactionMoney/broadcast',
+                uri: networkNodeUrl + "/receive-new-block",
                 method: "POST",
-                body: {
-                    amount: 12.5,
-                    sender: "00",
-                    recipient: nodeAddress
-                },
+                body: {newBlock: newBlock},
                 json: true
             };
-            return rp(requestOptions);
-        })
-        .then(data => {
-            res.json({
-                note: "New block mined & broadcast successfully",
-                block: newBlock
-            });
+            requestPromises.push(rp(requestOptions));
         });
+        Promise.all(requestPromises)
+            .then(data => {
+                const requestOptions = {
+                    uri: carChain.currentNodeUrl + '/transactionMoney/broadcast',
+                    method: "POST",
+                    body: {
+                        amount: 12.5,
+                        sender: "00",
+                        recipient: nodeAddress
+                    },
+                    json: true
+                };
+                return rp(requestOptions);
+            })
+            .then(data => {
+                res.json({
+                    note: "New block mined & broadcast successfully",
+                    block: newBlock
+                });
+            });
+    }
 });
 
 app.post("/receive-new-block", function (req, res) {
     const newBlock = req.body.newBlock;
-    const lastBlock = bitcoin.getLastBlock();
+    const lastBlock = carChain.getLastBlock();
     const correctHash = lastBlock.hash === newBlock.previousBlockHash;
     const correctIndex = lastBlock['index'] + 1 === newBlock['index'];
 
-    if (correctIndex && correctHash) {
-        bitcoin.chain.push(newBlock);
-        bitcoin.pendingTransactions = [];
+    if (correctIndex && correctHash){
+        console.log('setando already block mined');
+        carChain.setAlreadyBlockMined();
+        carChain.chain.push(newBlock);
+        carChain.pendingTransactions = [];
         res.json({
             note: 'New block received and accepted.',
             newBlock: newBlock
         });
     } else {
+        console.log('bloco rejeitado');
         res.json({
             note: 'New block rejected.',
             newBlock: newBlock
@@ -141,11 +153,11 @@ app.post("/receive-new-block", function (req, res) {
 // fazendo com que todos os nós adicionem o novo nó. Depois disso, adiciona todos os nós para o novo nó inserido, através do register-nodes-bulk
 app.post('/register-and-broadcast-node', function (req, res) {
     const newNodeUrl = req.body.newNodeUrl;
-    if (bitcoin.networkNodes.indexOf(newNodeUrl) == -1)
-        bitcoin.networkNodes.push(newNodeUrl);
+    if (carChain.networkNodes.indexOf(newNodeUrl) == -1)
+        carChain.networkNodes.push(newNodeUrl);
 
     const regNodesPromises = [];
-    bitcoin.networkNodes.forEach(networkNodeUrl => {
+    carChain.networkNodes.forEach(networkNodeUrl => {
         const requestOptions = {
             uri: networkNodeUrl + '/register-node',
             method: 'POST',
@@ -162,7 +174,7 @@ app.post('/register-and-broadcast-node', function (req, res) {
             const bulkRegisterOptions = {
                 uri: newNodeUrl + "/register-nodes-bulk",
                 method: 'POST',
-                body: {allNetworkNodes: [...bitcoin.networkNodes, bitcoin.currentNodeUrl]},
+                body: {allNetworkNodes: [...carChain.networkNodes, carChain.currentNodeUrl]},
                 json: true
             };
             return rp(bulkRegisterOptions);
@@ -176,11 +188,11 @@ app.post('/register-and-broadcast-node', function (req, res) {
 // register a node with the network
 app.post('/register-node', function (req, res) {
     const newNodeUrl = req.body.newNodeUrl;
-    const nodeNotAlreadyPresent = bitcoin.networkNodes.indexOf(newNodeUrl) == -1;
-    const notCurrentNode = bitcoin.currentNodeUrl != newNodeUrl;
+    const nodeNotAlreadyPresent = carChain.networkNodes.indexOf(newNodeUrl) == -1;
+    const notCurrentNode = carChain.currentNodeUrl != newNodeUrl;
 
     if (nodeNotAlreadyPresent && notCurrentNode)
-        bitcoin.networkNodes.push(newNodeUrl);
+        carChain.networkNodes.push(newNodeUrl);
     res.json({node: 'New node registered successfully.'});
 });
 
@@ -188,10 +200,10 @@ app.post('/register-node', function (req, res) {
 app.post('/register-nodes-bulk', function (req, res) {
     const allNetworkNodes = req.body.allNetworkNodes;
     allNetworkNodes.forEach(networkNodeUrl => {
-        const nodeNotAlreadyPresent = bitcoin.networkNodes.indexOf(networkNodeUrl) == -1;
-        const notCurrentNode = bitcoin.currentNodeUrl != networkNodeUrl;
+        const nodeNotAlreadyPresent = carChain.networkNodes.indexOf(networkNodeUrl) == -1;
+        const notCurrentNode = carChain.currentNodeUrl != networkNodeUrl;
         if (nodeNotAlreadyPresent && notCurrentNode)
-            bitcoin.networkNodes.push(networkNodeUrl);
+            carChain.networkNodes.push(networkNodeUrl);
     });
 
     res.json({note: 'Bulk registration successfully.'});
@@ -199,7 +211,7 @@ app.post('/register-nodes-bulk', function (req, res) {
 
 app.get('/consensus', function (req, res) {
     const requestPromises = [];
-    bitcoin.networkNodes.forEach(networkNodeUrl => {
+    carChain.networkNodes.forEach(networkNodeUrl => {
         const requestOptions = {
             uri: networkNodeUrl + '/blockchain',
             method: 'GET',
@@ -210,7 +222,7 @@ app.get('/consensus', function (req, res) {
 
     Promise.all(requestPromises)
         .then(blockchains => {
-            const currentChainLength = bitcoin.chain.length;
+            const currentChainLength = carChain.chain.length;
             let maxChainLength = currentChainLength;
             let newLongestChain = null;
             let newPendingTransactions = null;
@@ -223,17 +235,17 @@ app.get('/consensus', function (req, res) {
                 }
             });
 
-            if (!newLongestChain || (newLongestChain && !bitcoin.chainIsValid(newLongestChain))) {
+            if (!newLongestChain || (newLongestChain && !carChain.chainIsValid(newLongestChain))) {
                 res.json({
                     note: 'Current chain has not been replaced',
-                    chain: bitcoin.chain
+                    chain: carChain.chain
                 });
-            } else if (newLongestChain && bitcoin.chainIsValid(newLongestChain)) {
-                bitcoin.chain = newLongestChain;
-                bitcoin.pendingTransactions = newPendingTransactions;
+            } else if (newLongestChain && carChain.chainIsValid(newLongestChain)) {
+                carChain.chain = newLongestChain;
+                carChain.pendingTransactions = newPendingTransactions;
                 res.json({
                     note: 'This chain has been replaced',
-                    chain: bitcoin.chain
+                    chain: carChain.chain
                 });
             }
         });
@@ -241,7 +253,7 @@ app.get('/consensus', function (req, res) {
 
 app.get('/block/:blockHash', (req, res) => { //localhost:3001/block/asdowidonaioda
     const blockHash = req.params.blockHash;
-    const correctBlock = bitcoin.getBlock(blockHash);
+    const correctBlock = carChain.getBlock(blockHash);
     res.json({
         block: correctBlock
     });
@@ -249,7 +261,7 @@ app.get('/block/:blockHash', (req, res) => { //localhost:3001/block/asdowidonaio
 
 app.get('/transaction/:transactionId', (req, res) => {
     const transactionId = req.params.transactionId;
-    const transactionData = bitcoin.getTransaction(transactionId);
+    const transactionData = carChain.getTransaction(transactionId);
     res.json({
         transaction: transactionData.transaction,
         block: transactionData.block
@@ -258,7 +270,7 @@ app.get('/transaction/:transactionId', (req, res) => {
 
 app.get('/address/:address', (req, res) => {
     const address = req.params.address;
-    const addressData = bitcoin.getAddressData(address);
+    const addressData = carChain.getAddressData(address);
     res.json({
         addressData: addressData
     });
@@ -266,7 +278,7 @@ app.get('/address/:address', (req, res) => {
 
 app.get('/carId/:carId', (req, res) => {
     const carId = req.params.carId;
-    const carIdData = bitcoin.getDataByCarId(carId);
+    const carIdData = carChain.getDataByCarId(carId);
     res.json({
         carIdData: carIdData
     });
@@ -275,6 +287,29 @@ app.get('/carId/:carId', (req, res) => {
 
 app.get('/block-explorer', (req, res) => {
     res.sendFile('./block-explorer/index.html', {root: __dirname});
+});
+
+app.get('/mineAll', (req,res) => {
+    console.log('mineAll');
+    const requestPromises = [];
+    carChain.networkNodes.forEach(networkNodeUrl => {
+        const requestOptions = {
+            uri: networkNodeUrl + '/mine',
+            method: 'GET',
+            json: true
+        };
+        requestPromises.push(rp(requestOptions));
+    });
+    const requestOptions = {
+        uri: carChain.currentNodeUrl + '/mine',
+        method: 'GET',
+        json: true
+    };
+    requestPromises.push(rp(requestOptions));
+    Promise.all(requestPromises)
+        .then(data => {
+            res.json({node: 'Mineirado com sucesso'});
+        })
 });
 
 app.listen(port, function () {

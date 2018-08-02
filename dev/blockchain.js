@@ -9,10 +9,12 @@ const lineReader = require('readline').createInterface({
     input: require('fs').createReadStream('chain.txt')
 });
 
+var alreadyBlockMined = false;
+
 function Blockchain() {
     this.chain = [];
-    this.pendingTransactions = [];
 
+    this.pendingTransactions = [];
     this.currentNodeUrl = currentNodeUrl;
     this.networkNodes = [];
 
@@ -74,10 +76,16 @@ Blockchain.prototype.hashBlock = function (previousBlockHash, currentBlockData, 
     return hash;
 };
 
-Blockchain.prototype.proofOfWork = function (previousBlockHash, currentBlockData) {
+Blockchain.prototype.proofOfWork = function (previousBlockHash, currentBlockData){
+    console.log('comecando a minerar');
+    alreadyBlockMined = false;
     let nonce = 0;
     let hash = this.hashBlock(previousBlockHash, currentBlockData, nonce);
     while (hash.substring(0, 4) !== '0000') {
+        if(alreadyBlockMined){
+            console.log('Outro bloco ja mineirou');
+            return -1;
+        }
         nonce++;
         hash = this.hashBlock(previousBlockHash, currentBlockData, nonce);
     }
@@ -183,6 +191,10 @@ Blockchain.prototype.getDataByCarId = function(carId) {
         meterByDay: meterByDay,
         odometer: odometer
     };
+};
+
+Blockchain.prototype.setAlreadyBlockMined = function () {
+    alreadyBlockMined = true;
 };
 
 module.exports = Blockchain;

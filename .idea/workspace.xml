@@ -2,11 +2,9 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="5d0dd209-dda8-41b0-9174-7f653735cdd9" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/chain.txt" beforeDir="false" afterPath="$PROJECT_DIR$/chain.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/dev/blockchain.js" beforeDir="false" afterPath="$PROJECT_DIR$/dev/blockchain.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/dev/networkNode.js" beforeDir="false" afterPath="$PROJECT_DIR$/dev/networkNode.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/.tmp/" />
     <ignored path="$PROJECT_DIR$/temp/" />
@@ -21,6 +19,7 @@
     <session id="822670548">
       <usages-collector id="statistics.lifecycle.project">
         <counts>
+          <entry key="project.closed" value="1" />
           <entry key="project.open.time.5" value="1" />
           <entry key="project.open.time.58" value="1" />
           <entry key="project.opened" value="2" />
@@ -38,12 +37,12 @@
       </usages-collector>
       <usages-collector id="statistics.file.extensions.edit">
         <counts>
-          <entry key="js" value="1397" />
+          <entry key="js" value="2206" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
-          <entry key="JavaScript" value="1397" />
+          <entry key="JavaScript" value="2206" />
         </counts>
       </usages-collector>
     </session>
@@ -53,8 +52,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/dev/blockchain.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="34">
-              <caret line="8" column="48" selection-start-line="8" selection-start-column="48" selection-end-line="8" selection-end-column="48" />
+            <state relative-caret-position="-911">
+              <caret line="13" column="23" lean-forward="true" selection-start-line="13" selection-start-column="23" selection-end-line="13" selection-end-column="23" />
             </state>
           </provider>
         </entry>
@@ -62,8 +61,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/dev/networkNode.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="204">
-              <caret line="89" column="34" lean-forward="true" selection-start-line="89" selection-start-column="34" selection-end-line="89" selection-end-column="34" />
+            <state relative-caret-position="34">
+              <caret line="41" lean-forward="true" selection-start-line="41" selection-end-line="41" />
             </state>
           </provider>
         </entry>
@@ -79,10 +78,8 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>createNewTransaction</find>
       <find>bitcoin</find>
       <find>functi</find>
-      <find>mine</find>
       <find>chainIsValid</find>
       <find>correctHash</find>
       <find>=&gt;</find>
@@ -91,6 +88,26 @@
       <find>getLastBlock</find>
       <find>nodeAddress</find>
       <find>receive-new-block</find>
+      <find>CONSENSUS</find>
+      <find>regNodesPromises</find>
+      <find>/receive-new-bloc</find>
+      <find>consens</find>
+      <find>myUrl</find>
+      <find>port</find>
+      <find>ive-ne</find>
+      <find>consen</find>
+      <find>strin</find>
+      <find>receive-new-bloc</find>
+      <find>consensus</find>
+      <find>request</find>
+      <find>proo</find>
+      <find>currentNodeUrl</find>
+      <find>mine</find>
+      <find>000</find>
+      <find>alrea</find>
+      <find>00000</find>
+      <find>receive</find>
+      <find>alreadyBlockMined</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -197,12 +214,12 @@
       <option name="presentableId" value="Default" />
       <updated>1533125174231</updated>
       <workItem from="1533125178469" duration="9435000" />
-      <workItem from="1533231268378" duration="1206000" />
+      <workItem from="1533231268378" duration="7636000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="10641000" />
+    <option name="totallyTimeSpent" value="17071000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1382" height="744" extended-state="6" />
@@ -266,15 +283,15 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/dev/blockchain.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="34">
-          <caret line="8" column="48" selection-start-line="8" selection-start-column="48" selection-end-line="8" selection-end-column="48" />
+        <state relative-caret-position="-911">
+          <caret line="13" column="23" lean-forward="true" selection-start-line="13" selection-start-column="23" selection-end-line="13" selection-end-column="23" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/dev/networkNode.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="204">
-          <caret line="89" column="34" lean-forward="true" selection-start-line="89" selection-start-column="34" selection-end-line="89" selection-end-column="34" />
+        <state relative-caret-position="34">
+          <caret line="41" lean-forward="true" selection-start-line="41" selection-end-line="41" />
         </state>
       </provider>
     </entry>

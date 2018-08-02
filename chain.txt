@@ -1,0 +1,3 @@
+{"index":1,"timestamp":1533232204232,"transactions":[],"nonce":100,"hash":"0","previousBlockHash":"0"}
+{"index":2,"timestamp":1533232218994,"transactions":[{"meter":40,"carId":"matheus","transactionId":"80274b10967c11e892aae761335366f4"},{"meter":40,"carId":"matheus","transactionId":"809f3a30967c11e892aae761335366f4"}],"nonce":20295,"hash":"00006371fdd4e7c1880ac82c07384c005d4ef83c9aa97d6fd09241d92140ed37","previousBlockHash":"0"}
+{"index":1,"timestamp":1533232481234,"transactions":[],"nonce":100,"hash":"0","previousBlockHash":"0"}

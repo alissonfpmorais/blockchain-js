@@ -1,6 +1,13 @@
 const sha256 = require('sha256');
 const currentNodeUrl = process.argv[3];
 const uuid = require('uuid/v1');
+const fs = require('fs')
+const writter = fs.createWriteStream('chain.txt', {
+    flags: 'a' // 'a' means appending (old data will be preserved)
+});
+const lineReader = require('readline').createInterface({
+    input: require('fs').createReadStream('chain.txt')
+});
 
 function Blockchain() {
     this.chain = [];
@@ -23,6 +30,9 @@ Blockchain.prototype.createNewBlock = function (nonce, previousBlockHash, hash) 
     };
 
     this.pendingTransactions = [];
+    if( writter != null){
+        writter.write(JSON.stringify(newBlock) + '\r\n') //
+    }
     this.chain.push(newBlock);
 
     return newBlock;

@@ -52,7 +52,7 @@ app.post('/transaction/broadcast', (req, res) => {
 	if(!carChain.isPasswordValid(carId, password)){
 		res.json({ note: 'Password incorrect' });
 	} else {
-	    const newTransaction = carChain.createNewTransaction(req.body.meter, req.bodycarId, password);
+	    const newTransaction = carChain.createNewTransaction(req.body.meter, req.body.carId, password);
 	    carChain.addTransactionToPendingTransactions(newTransaction);
 
 	    const requestPromises = [];
@@ -89,7 +89,7 @@ app.get('/mine', function (req, res) {
             method: 'GET',
             json: true
         }
-        console.log('Chamando consensus pq outro no mineirou primeiro');
+        console.log('Chamando consensus pq outro no minerou primeiro');
         rp(requestOptions);
     }
     else {
@@ -210,6 +210,12 @@ app.post('/register-nodes-bulk', function (req, res) {
         if (nodeNotAlreadyPresent && notCurrentNode)
             carChain.networkNodes.push(networkNodeUrl);
     });
+    const consensusRequest = {
+                uri: carChain.currentNodeUrl + "/consensus",
+                method: 'GET',
+                json: true
+            };
+    rp(consensusRequest);
 
     res.json({note: 'Bulk registration successfully.'});
 });

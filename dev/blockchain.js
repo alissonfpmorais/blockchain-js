@@ -5,9 +5,6 @@ const fs = require('fs')
 const writter = fs.createWriteStream('chain.txt', {
     flags: 'a' // 'a' means appending (old data will be preserved)
 });
-const lineReader = require('readline').createInterface({
-    input: require('fs').createReadStream('chain.txt')
-});
 
 var alreadyBlockMined = false;
 
@@ -18,7 +15,22 @@ function Blockchain() {
     this.currentNodeUrl = currentNodeUrl;
     this.networkNodes = [];
 
-    this.createNewBlock(100, '0', '0');
+	var contents = fs.readFileSync('chain.txt', 'utf8').split('\n');
+	
+	if(contents == ""){
+   		this.createNewBlock(100, '0', '0');
+	} else{
+		contents.forEach(blockString => {
+			if(blockString != ""){
+				var obj = JSON.parse(blockString);
+				this.addBlock(obj);
+			}
+		});
+	} 
+}
+
+Blockchain.prototype.addBlock = function(block) {
+	this.chain.push(block);
 }
 
 Blockchain.prototype.createNewBlock = function (nonce, previousBlockHash, hash) {
@@ -51,7 +63,6 @@ Blockchain.prototype.createNewTransaction = (meter, carId, password) => {
         password: password,
         transactionId: uuid().split('-').join('')
     };
-
     return newTransaction;
 };
 
@@ -197,7 +208,6 @@ Blockchain.prototype.getDataByCarId = function(carId) {
 
 Blockchain.prototype.isPasswordValid = function(carId,password) {
 	var passwordValid = true;
-	console.log(this.chain);
     this.chain.forEach(block => {
         block.transactions.forEach(transaction => {
             if(transaction.carId === carId) {

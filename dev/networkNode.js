@@ -47,26 +47,31 @@ app.post('/transactionMoney/broadcast', function (req, res) {
 });
 
 app.post('/transaction/broadcast', (req, res) => {
-    //verificar senha e se ja existe o carro
-    const newTransaction = carChain.createNewTransaction(req.body.meter, req.body.carId);
-    carChain.addTransactionToPendingTransactions(newTransaction);
+	const password = req.body.password;
+	const carId = req.body.carId;
+	if(!carChain.isPasswordValid(carId, password)){
+		res.json({ note: 'Password incorrect' });
+	} else {
+	    const newTransaction = carChain.createNewTransaction(req.body.meter, req.bodycarId, password);
+	    carChain.addTransactionToPendingTransactions(newTransaction);
 
-    const requestPromises = [];
-    carChain.networkNodes.forEach(networkNodeUrl =>{
-        const requestOptions = {
-            uri: networkNodeUrl + "/transaction",
-            method: 'POST',
-            body: { newTransaction: newTransaction},
-            json: true
-        };
+	    const requestPromises = [];
+	    carChain.networkNodes.forEach(networkNodeUrl =>{
+	        const requestOptions = {
+	            uri: networkNodeUrl + "/transaction",
+	            method: 'POST',
+	            body: { newTransaction: newTransaction},
+	            json: true
+	        };
 
-        requestPromises.push(rp(requestOptions));
-    });
+	        requestPromises.push(rp(requestOptions));
+	    });
 
-    Promise.all(requestPromises)
-        .then(data => {
-            res.json({ note: 'Transaction created and broadcast successfully' });
-        });
+	    Promise.all(requestPromises)
+	        .then(data => {
+	            res.json({ note: 'Transaction created and broadcast successfully' });
+	        });
+    }
 });
 
 app.get('/mine', function (req, res) {

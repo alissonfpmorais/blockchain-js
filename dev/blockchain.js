@@ -44,10 +44,11 @@ Blockchain.prototype.getLastBlock = function () {
     return this.chain[this.chain.length - 1];
 };
 
-Blockchain.prototype.createNewTransaction = (meter, carId) => {
+Blockchain.prototype.createNewTransaction = (meter, carId, password) => {
     const newTransaction = {
         meter: meter,
         carId: carId,
+        password: password,
         transactionId: uuid().split('-').join('')
     };
 
@@ -193,6 +194,31 @@ Blockchain.prototype.getDataByCarId = function(carId) {
     };
 };
 
+
+Blockchain.prototype.isPasswordValid = function(carId,password) {
+	var passwordValid = true;
+	console.log(this.chain);
+    this.chain.forEach(block => {
+        block.transactions.forEach(transaction => {
+            if(transaction.carId === carId) {
+                if(transaction.password != password){
+                	passwordValid = false;
+                }
+            };
+        });
+    });
+    //se nao achou, tenta procurar nas transaçoes pendentes
+    if(passwordValid) {
+    	this.pendingTransactions.forEach(transaction => {
+    		if(transaction.carId === carId) {
+                if(transaction.password != password){
+                	passwordValid = false;
+                }
+            };
+    	});
+    };
+    return passwordValid;
+};
 Blockchain.prototype.setAlreadyBlockMined = function () {
     alreadyBlockMined = true;
 };

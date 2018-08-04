@@ -6,7 +6,7 @@ const uuid = require('uuid/v1');
 const port = process.argv[2];
 const rp = require('request-promise');
 const cors = require('cors')
-
+const numberOfZeros = '0000'
 const nodeAddress = uuid().split('-').join('');
 
 const carChain = new Blockchain();
@@ -50,6 +50,7 @@ app.post('/transactionMoney/broadcast', function (req, res) {
 });
 
 app.post('/transaction/broadcast', (req, res) => {
+	console.log()
 	const password = req.body.password;
 	const carId = req.body.carId;
 	if(!carChain.isPasswordValid(carId, password)){
@@ -82,7 +83,7 @@ app.get('/mine', function (req, res) {
     const lastBlock = carChain.getLastBlock();
     const previousBlockHash = lastBlock['hash'];
     const currentBlockData = {
-        transactions: carChain.pendingTransactions,
+        transactions: carChain.pendingTransactions.slice(),//passando por copia
         index: lastBlock['index'] + 1
     };
     const nonce = carChain.proofOfWork(previousBlockHash, currentBlockData);
@@ -97,8 +98,8 @@ app.get('/mine', function (req, res) {
     }
     else {
         const blockHash = carChain.hashBlock(previousBlockHash, currentBlockData, nonce);
-        const newBlock = carChain.createNewBlock(nonce, previousBlockHash, blockHash);
-
+        const newBlock = carChain.createNewBlock(nonce, previousBlockHash, blockHash, currentBlockData['transactions']);
+     
         const requestPromises = [];
         carChain.networkNodes.forEach(networkNodeUrl => {
             const requestOptions = {
@@ -137,12 +138,17 @@ app.post("/receive-new-block", function (req, res) {
     const lastBlock = carChain.getLastBlock();
     const correctHash = lastBlock.hash === newBlock.previousBlockHash;
     const correctIndex = lastBlock['index'] + 1 === newBlock['index'];
+    const blockHash = carChain.hashBlock(lastBlock['hash'], {
+            transactions: newBlock['transactions'],
+            index: newBlock['index']
+        }, newBlock['nonce']);
+    const correctNonce = blockHash.substring(0, 4) === numberOfZeros;
 
-    if (correctIndex && correctHash){
+    if (correctIndex && correctHash && correctNonce){
         console.log('setando already block mined');
         carChain.setAlreadyBlockMined();
         carChain.chain.push(newBlock);
-        carChain.pendingTransactions = [];
+        carChain.removeMinedTransactions(newBlock['transactions']);
         res.json({
             note: 'New block received and accepted.',
             newBlock: newBlock

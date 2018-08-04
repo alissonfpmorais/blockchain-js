@@ -7,6 +7,7 @@ const writter = fs.createWriteStream('chain.txt', {
 });
 
 var alreadyBlockMined = false;
+const numberOfZeros = '0000'
 
 function Blockchain() {
     this.chain = [];
@@ -18,7 +19,7 @@ function Blockchain() {
     var contents = fs.readFileSync('chain.txt', 'utf8').split('\n');
 
     if(contents == ""){
-        this.createNewBlock(100, '0', '0');
+        this.createNewBlock(100, '0', '0',[]);
     } else{
         contents.forEach(blockString => {
             if(blockString != ""){
@@ -33,23 +34,27 @@ Blockchain.prototype.addBlock = function(block) {
     this.chain.push(block);
 }
 
-Blockchain.prototype.createNewBlock = function (nonce, previousBlockHash, hash) {
+Blockchain.prototype.createNewBlock = function (nonce, previousBlockHash, hash, pendingTransactionsMined) {
     const newBlock = {
         index: this.chain.length + 1,
         timestamp: Date.now(),
-        transactions: this.pendingTransactions,
+        transactions: pendingTransactionsMined,
         nonce: nonce,
         hash: hash,
         previousBlockHash: previousBlockHash
     };
 
-    this.pendingTransactions = [];
+    this.removeMinedTransactions(pendingTransactionsMined);
     if( writter != null){
         writter.write(JSON.stringify(newBlock) + '\r\n') //
     }
     this.chain.push(newBlock);
 
     return newBlock;
+};
+
+Blockchain.prototype.removeMinedTransactions = function (pendingTransactionsMined) {
+    this.pendingTransactions.splice(0,pendingTransactionsMined.length);
 };
 
 Blockchain.prototype.getLastBlock = function () {
@@ -93,13 +98,15 @@ Blockchain.prototype.proofOfWork = function (previousBlockHash, currentBlockData
     alreadyBlockMined = false;
     let nonce = 0;
     let hash = this.hashBlock(previousBlockHash, currentBlockData, nonce);
-    while (hash.substring(0, 4) !== '0000') {
+    while (hash.substring(0, 4) !== numberOfZeros) {
         if(alreadyBlockMined){
             console.log('Outro bloco ja mineirou');
             return -1;
         }
         nonce++;
         hash = this.hashBlock(previousBlockHash, currentBlockData, nonce);
+        console.log(nonce);
+        console.log(hash);
     }
 
     return nonce;
@@ -114,7 +121,7 @@ Blockchain.prototype.chainIsValid = function (blockchain) {
             transactions: currentBlock['transactions'],
             index: currentBlock['index']
         }, currentBlock['nonce']);
-        if (blockHash.substring(0, 4) !== '0000') validChain = false;
+        if (blockHash.substring(0, 4) !== numberOfZeros) validChain = false;
         if (currentBlock['previousBlockHash'] !== prevBlock['hash']) {
             //chain not valid
             validChain = false;

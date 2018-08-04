@@ -7,7 +7,8 @@ const writter = fs.createWriteStream('chain.txt', {
 });
 
 var alreadyBlockMined = false;
-const numberOfZeros = '0000'
+const zerosString = '000000';
+const numberOfZeros = zerosString.length;
 
 function Blockchain() {
 	this.chain = [];
@@ -98,7 +99,7 @@ Blockchain.prototype.proofOfWork = function (previousBlockHash, currentBlockData
 	alreadyBlockMined = false;
 	let nonce = 0;
 	let hash = this.hashBlock(previousBlockHash, currentBlockData, nonce);
-	while (hash.substring(0, 4) !== numberOfZeros) {
+	while (hash.substring(0, numberOfZeros) !== zerosString) {
 		if(alreadyBlockMined){
 			console.log('Outro bloco ja mineirou');
 			return -1;
@@ -119,7 +120,7 @@ Blockchain.prototype.chainIsValid = function (blockchain) {
 			transactions: currentBlock['transactions'],
 			index: currentBlock['index']
 		}, currentBlock['nonce']);
-		if (blockHash.substring(0, 4) !== numberOfZeros) validChain = false;
+		if (blockHash.substring(0, numberOfZeros) !== zerosString) validChain = false;
 		if (currentBlock['previousBlockHash'] !== prevBlock['hash']) {
             //chain not valid
             validChain = false;

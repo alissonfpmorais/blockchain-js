@@ -6,7 +6,8 @@ const uuid = require('uuid/v1');
 const port = process.argv[2];
 const rp = require('request-promise');
 const cors = require('cors')
-const numberOfZeros = '0000'
+const zerosString = '000000';
+const numberOfZeros = zerosString.length;
 const nodeAddress = uuid().split('-').join('');
 
 const carChain = new Blockchain();
@@ -141,7 +142,7 @@ app.post("/receive-new-block", function (req, res) {
 		transactions: newBlock['transactions'],
 		index: newBlock['index']
 	}, newBlock['nonce']);
-	const correctNonce = blockHash.substring(0, 4) === numberOfZeros;
+	const correctNonce = blockHash.substring(0, numberOfZeros) === zerosString;
 
 	if (correctIndex && correctHash && correctNonce){
 		console.log('setando already block mined');

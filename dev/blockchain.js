@@ -15,22 +15,22 @@ function Blockchain() {
     this.currentNodeUrl = currentNodeUrl;
     this.networkNodes = [];
 
-	var contents = fs.readFileSync('chain.txt', 'utf8').split('\n');
-	
-	if(contents == ""){
-   		this.createNewBlock(100, '0', '0');
-	} else{
-		contents.forEach(blockString => {
-			if(blockString != ""){
-				var obj = JSON.parse(blockString);
-				this.addBlock(obj);
-			}
-		});
-	} 
+    var contents = fs.readFileSync('chain.txt', 'utf8').split('\n');
+
+    if(contents == ""){
+        this.createNewBlock(100, '0', '0');
+    } else{
+        contents.forEach(blockString => {
+            if(blockString != ""){
+                var obj = JSON.parse(blockString);
+                this.addBlock(obj);
+            }
+        });
+    }
 }
 
 Blockchain.prototype.addBlock = function(block) {
-	this.chain.push(block);
+    this.chain.push(block);
 }
 
 Blockchain.prototype.createNewBlock = function (nonce, previousBlockHash, hash) {
@@ -207,25 +207,25 @@ Blockchain.prototype.getDataByCarId = function(carId) {
 
 
 Blockchain.prototype.isPasswordValid = function(carId,password) {
-	var passwordValid = true;
+    var passwordValid = true;
     this.chain.forEach(block => {
         block.transactions.forEach(transaction => {
             if(transaction.carId === carId) {
                 if(transaction.password != password){
-                	passwordValid = false;
+                    passwordValid = false;
                 }
             };
         });
     });
     //se nao achou, tenta procurar nas transaçoes pendentes
     if(passwordValid) {
-    	this.pendingTransactions.forEach(transaction => {
-    		if(transaction.carId === carId) {
+        this.pendingTransactions.forEach(transaction => {
+            if(transaction.carId === carId) {
                 if(transaction.password != password){
-                	passwordValid = false;
+                    passwordValid = false;
                 }
             };
-    	});
+        });
     };
     return passwordValid;
 };
